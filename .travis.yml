@@ -10,8 +10,15 @@ python:
 script:
   - python -m pytest -v
 
-deploy:
-  provider: script
-  script: bash .travis/deploy_dockerhub.sh
-  on:
-    branch: master
+after_success:
+  - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
+  - export REPO="aravin008/cicd-buzz"
+  - export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TRAVIS_BR
+  - docker build -f Dockerfile -t $REPO:$TAG .
+  - docker push $REPO
+
+#deploy:
+#  provider: script
+#  script: bash .travis/deploy_dockerhub.sh
+#  on:
+#    branch: master
