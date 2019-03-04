@@ -7,4 +7,4 @@ else
     TAG="$TRAVIS_BRANCH"
 fi
 docker build -f Dockerfile -t "aravin008"/"cicd-buzz":$TAG .
-docker push "aravin008"/"cicd-buzz":$TAG
+docker push "aravin008"/"cicd-buzz"
