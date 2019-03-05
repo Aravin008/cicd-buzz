@@ -20,7 +20,7 @@ after_success:
 - chmod 400 "login_mar5_1.pem"
 - ls -al login_mar5_1.pem
 - scp -o "StrictHostKeyChecking no" -r -i "login_mar5_1.pem" .travis/test.sh ubuntu@$MACHINE:/home/ubuntu/  
-- ssh  -o "StrictHostKeyChecking no" -i "login_mar5_1.pem" $MACHINE 'bash -s' < .travis/test.sh
+- ssh  -o "StrictHostKeyChecking no" -i "login_mar5_1.pem" ubuntu@$MACHINE 'bash -s' < .travis/test.sh
 before_install:
 - openssl aes-256-cbc -K $encrypted_73f399b0be97_key -iv $encrypted_73f399b0be97_iv
   -in login_mar5_1.pem.enc -out login_mar5_1.pem -d
