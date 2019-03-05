@@ -6,7 +6,6 @@ python:
 - '3.5'
 script:
 - python -m pytest -v
-
 after_success:
 - echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
 - export REPO="aravin008/cicd-buzz"
@@ -18,11 +17,9 @@ after_success:
 - docker push $REPO
 - chmod 400 "login_mar5_1.pem"
 - ssh -i "login_mar5_1.pem" $MACHINE 'bash -s' < .travis/test.sh
-
-before_install:
-- openssl aes-256-cbc -K $encrypted_73f399b0be97_key -iv $encrypted_73f399b0be97_iv
-  -in login_mar5_1.pem.enc -out login_mar5_1.pem -d
-
 env:
   matrix:
     secure: dy3L8fRY7cQ/yMzLLnXrRpuuBmeuWdlVz/fiiwUdapgPVlyuK2PwPRFyqugXnGCjrLg7w8JSyQC7Zo6KevPnepEJm/OUsVLyN9hIAolOKDlCLCFHsrNhgQ04QTFBACxMQuBy2PHVeJEXlfUpVg91F9VRrGE1XRNzKqtRPgjKpyeNMswX8LoXYYsT/Q0qQpYgNaTw7lIihetxt5MUpWcndRZkkbdgRnv9kw61OoRqE+bYLjXEzAdc6bsD0q6Jk+r+Ksf8quhzDGyVCELIDYSX3YjWr+Yyn5pXZjZUYZxT6g9kcE3gZsUwYqLX4Hm8LrroTxoTzkSiuAGgaDEXLgpR04Of+uxKy9uZkJl2gmvT/P4tQ+XJ+GTAa8WMCAihQWNwSFr4uAV9493A4WeyAL/DeeESd6xOooN59Cw4SZlVt6p56XSbco6xbgGjA+MCdaKoqKRW/Qn9K1ESEOK7ieXWxBCeQyD3Dix93cuzZq09iaKkHi033CIMsg43h+lBK3f/rq1tQKjZdz0gSSml70MZiYHaBsZt2mkiuInnu5UBkSCTVN4jyrfOaHtGdj1HsLAuYnjRNuq8VXOlGqJhM1bIBzkt30mvrDf+brAAH513F7nfwAwPx/SydPd2LMuUtNbZNrxKj3nncStyWgGnlGtdfKhIjYZqK6ZRzL5Kol/kp4o=
+before_install:
+- openssl aes-256-cbc -K $encrypted_73f399b0be97_key -iv $encrypted_73f399b0be97_iv
+  -in login_mar5_1.pem.enc -out login_mar5_1.pem -d
