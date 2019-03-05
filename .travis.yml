@@ -21,8 +21,6 @@ after_success:
 
 before_install:
 - openssl aes-256-cbc -K $encrypted_73f399b0be97_key -iv $encrypted_73f399b0be97_iv
-  -in test.sh.enc -out .travis/test.sh -d
-- openssl aes-256-cbc -K $encrypted_73f399b0be97_key -iv $encrypted_73f399b0be97_iv
   -in login_mar5_1.pem.enc -out login_mar5_1.pem -d
 
 env:
