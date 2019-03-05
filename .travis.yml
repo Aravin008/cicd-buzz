@@ -6,6 +6,8 @@ python:
 - '3.5'
 script:
 - python -m pytest -v
+addons:
+  ssh_known_hosts: $MACHINE
 after_success:
 - echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
 - export REPO="aravin008/cicd-buzz"
@@ -16,7 +18,7 @@ after_success:
 - echo "REPO:$REPO"
 - docker push $REPO
 - chmod 400 "login_mar5_1.pem"
-- yes | ssh -i "login_mar5_1.pem" $MACHINE 'bash -s' < .travis/test.sh
+- ssh -i "login_mar5_1.pem" $MACHINE 'bash -s' < .travis/test.sh
 before_install:
 - openssl aes-256-cbc -K $encrypted_73f399b0be97_key -iv $encrypted_73f399b0be97_iv
   -in login_mar5_1.pem.enc -out login_mar5_1.pem -d
