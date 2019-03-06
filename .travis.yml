@@ -4,48 +4,37 @@ services:
 language: python
 python:
 - '3.5'
-
 stages:
 - name: test
 - name: build and push docker image
 - name: deploy2
-
 jobs:
   include:
-    - stage: test
-      script:
-        - python -m pytest -v
-    - stage: build and push docker image
-      script:
-      - echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
-      - export REPO="aravin008/cicd-buzz"
-      - export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TRAVIS_BRANCH
-        ; fi`
-      - docker build -f Dockerfile -t $REPO:$TAG .
-      - docker image ls
-      - echo "REPO:$REPO"
-      - docker push $REPO
-    - stage: deploy2
-      env:
-        - secure: mOzhoP5LBmz1TOfdVdodpmVyG1cHzz5+UqbCVhoSRuuaQZVG7L2Y7EzqtDY/N0ursbEOMuG0qJP2azPhTife/ME1Ktix5TXAyfrqz5AxDtHS4CX3q5V17ktFz3IMmcnWQYGLbc+4x+k+2ZrVx8qJ+MFZSqrZHhy+bE19e5o8JR1542fgsPXkby8vsMUQUakKUPWQNsYh9vNTqInMkscneiqYoW4TPDM+Vt8yEOSlFLms9A8vB7sYlJhDJn/JrJo2P6tJW0gvytXSFrAuNui8Ju2Aizi6e3gN7mjnAZaJ07D4rJ/nIrUQ6d3kX0t9WW9AF7wstS78chI/bUB3xf1H/wmKL+cWLlmhGgyTLwG1ILybGtCkmNmzcpCeUEmK90xSVNntWyIM9BuaiCm2EU7H6bTtCmrRXNrkFiiJPuOwbUARyYZeDDJm2Wne1Co2v4j2SzfiH8ztyM7mTx/FzJvlgBJ8jr8NuMNZRsiersmU8KTjoKHOynvxJo4FlzdG9vhAsQlWyv/S0cCQI5pNj++BBhMkcuwarsxv9n1XCpmd2MIrjDRZIZVO1w0ouCGjneGSwIwtadzYu0cfPaTjwvTKP5Zwu8JtI+U2kENdIzfgmRDIk9wvbqo95sW45EqvfeJHTy2WeHGvbqu1ej0myNvH24yFwyUQASFAbtL0ptUJbiA=
-        - secure: Q4lRraxuklPsXIiax7mActW7FEiD+Jg1ZSbvUfeoABcfj7Oj58Q5TSvwndC8uLwqzYuEtfq+WLGMn9A9OyUjtQBhdco52ufqCGI2r5jU35pXKbtH6V0bKR8tNDc0W4HfaT9FgMYDtRYkiMNB1phU++BHBIaz7Qm4xnUPCXpb7IW/JvXThxjBamu3bZ/K641y/rLAZtBW9AYoDftAFk8N+ylWfKMKnctrr5ZAg46rcq9Yv/sdZ/hDXQ0DsS/ldBNQgnltG2IKSVCmnrB9xDWrmzXRz8+iFiAKQChgc5Hby+oP2c1dSS9B1QxVWxYFJ4ZR9fpwVsprSsoIexIGGGgq1wVLpiuBOQTGoAFv1oPcZYwdwofOc6OEhpcbEXkTVp1KWItf1GzWDiiVUT/Q4fTiO9XAcOEBaxGh+uMkf1tnECERiPNSfhIzmwFFr4/l4VL9J6T4wteM9qwYt82SdD3XwQQ8U7Y43z6e+Laffc6f+zLGl3hLZs3VUCBg6t+/vLvHM5++6HctXA34fADtUHLjDmPYcwFS4/AhYnsKhqeoSb0ybs0DEkXC0M/8iNc+IsHKZbIOeutC3zIgFBmRy52zwrOv0Y63T6m9xXDfeSzzdy7s+psCk0Vw6OtpVllu4k6+k84wUdI//Q1hpiQs1fZUXjnVnDKbM+LdHwS+jp3yaPs=
-
-      before_install:
-        - openssl aes-256-cbc -K $encrypted_73f399b0be97_key -iv $encrypted_73f399b0be97_iv
-          -in login_mar5_1.pem.enc -out login_mar5_1.pem -d
-#        - chmod 600 login_mar5_1.pem
-#        - eval "$(ssh-agent -s)"
-#        - ssh-add login_mar5_1.pem
-
-#      addons:
-#        ssh_known_hosts: $MACHINE_IP
-
-      deploy: 
-        provider: script
-        script:
-          - chmod 400 "login_mar5_1.pem"
-          - ls -al login_mar5_1.pem
-          - scp -o "StrictHostKeyChecking no" -r -i "login_mar5_1.pem" .travis/test.sh $MACHINE:/home/ubuntu/
-          - ssh  -o "StrictHostKeyChecking no" -i "login_mar5_1.pem" $MACHINE 'bash -s'
-            < .travis/test.sh
-        
+  - stage: test
+    script:
+    - python -m pytest -v
+    - bandit -r buzz/
+  - stage: build and push docker image
+    install: skip
+    script:
+    - echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+    - export REPO="aravin008/cicd-buzz"
+    - export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo
+      $TRAVIS_BRANCH ; fi`
+    - docker build -f Dockerfile -t $REPO:$TAG .
+    - docker image ls
+    - echo "REPO:$REPO"
+    - docker push $REPO
+  - stage: deploy2
+    env:
+    - secure: H+zN2fIUrSXVEl54tob0nSQm9ptPwsTkJTR49bwlrvOgts5Musz6IDpVnW7vGN+dZ+XLxvAXFyYfdWTsaGGQ9zjd+5GHluDx35JFfcfdyLObpq0qgaz+Xfb7OnnfNkeypaE8yHNTkdcLxV227PbGo52Ldnl8rhohtfGLu08ZhLWWGIy8BRnn9KF/DX0m4cTfsKirBFGv6ooduKBsxeFXiYRGFcbdgMoHLFOVNYSwJ+3CRIAsoVAgp3nroDt4654D+onNZohEEdA4U7WY3qWl9AKj/hjY9vRm6p/fhdY3ry5ndUaXuJPyVvlhAPU1vJjQzkFoGa0I0FVanw3Dpq0VIijgpS18kOC6dShQOaNSlFfiDtluWr2Ax5G3oMWbCcTtrTYfnA7VZzkS6U17NPIw1/cfSIxR+11leAIPP1zoRibr2CnUw6cyis2hR4dnYLfa8hB2C01kMfPjjcmEdMK4r83J1ZeC5xUuwECabkmo+HOWyiJSbX3e9f0o+Ry1XHu6Qv38QJc9gvdecqu594d0ts1KmcCz8CaorJQY9rY4TKcraSkWVbLJIpO+Ybw4aj4PEldtZggTkgMy3TgbFMD8VC2TR0FeTVwLDLt4kQCJPEM7lcDuAurmh/V+2mhSlDYeHSUdtIllSBoUr6DJ5P+grWKsLN/RrUbzDmms5haOYN0=
+    - secure: g49u6ZBT/7/j8JNIIANR4Der5nlCsZ+YNzYrhY+dBJ1JVpQ8jH5IfbVBdgQgaS52RCpL5W7syGfb8lJGtWYBoyXaOI08bT+KF9PMrRn0/DfMh41tTlpilqINzsC7idA2ptXk0H8o2AilNseqi6OU2jAmyZbB4K19HQsOsKuk+RcwbE8XLIfyGrDk9RwhhksTQIBDCqzIqbL/zYJ4upaLiW0bW1nIwqpqQehBsST1G+kXRXJvWvCp/I9JagqfK7+d0xl8fwlg2mN9ubKYM7J+/tecshQyanFnxFohySXiLbPeA0FIKnMrbBnBpPl6vZWfTPpP6nN7hBI3KeQVc7Byydl9luh+1piXTGPL/m+sWXbpuXRKZgCSFiyZ+CyWkou27T5HZnmS7musUXVuiLQaZOusMWr1PophluMc5Nj0/Bnreh4WKNibbISFrg5QDNj6639C+u3YXyY5+U/C/yfU37sGAqnzbsf1Zg8J5nw2G5T4DuPZxhLKP5pexeIM4nvcY70440qDj9ptDT2oRPgteWOOVA3POrTaXU+/cFainxDIP3TB05usazz2pHvAVDHJkvYvitKHFdyHVcBYk/AqJcJVQ/NTVC8Dba/XAWoXSR6Z/2k9P++wMHB9t1p5tLApkbmZXaL1fUKBxFPlWIQwjwaNw04Nw35DTkg13cFN9ac=
+    before_install:
+    - openssl aes-256-cbc -K $encrypted_73f399b0be97_key -iv $encrypted_73f399b0be97_iv -in login_mar5_1.pem.enc -out login_mar5_1.pem -d
+    install: skip
+    script:
+    - chmod 400 "login_mar5_1.pem"
+    - ls -al login_mar5_1.pem
+    - scp -o "StrictHostKeyChecking no" -r -i "login_mar5_1.pem" .travis/test.sh $MACHINE:/home/ubuntu/
+    - ssh  -o "StrictHostKeyChecking no" -i "login_mar5_1.pem" $MACHINE 'bash -s'
+      < .travis/test.sh
