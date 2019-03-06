@@ -4,12 +4,16 @@ services:
 language: python
 python:
 - '3.5'
+
 stages:
+- name: test
 - name: staging
-- name: deploying
 
 jobs:
   include:
+    - stage: test
+      script:
+        - python -m pytest -v
     - stage: staging
       env:
         - secure: mOzhoP5LBmz1TOfdVdodpmVyG1cHzz5+UqbCVhoSRuuaQZVG7L2Y7EzqtDY/N0ursbEOMuG0qJP2azPhTife/ME1Ktix5TXAyfrqz5AxDtHS4CX3q5V17ktFz3IMmcnWQYGLbc+4x+k+2ZrVx8qJ+MFZSqrZHhy+bE19e5o8JR1542fgsPXkby8vsMUQUakKUPWQNsYh9vNTqInMkscneiqYoW4TPDM+Vt8yEOSlFLms9A8vB7sYlJhDJn/JrJo2P6tJW0gvytXSFrAuNui8Ju2Aizi6e3gN7mjnAZaJ07D4rJ/nIrUQ6d3kX0t9WW9AF7wstS78chI/bUB3xf1H/wmKL+cWLlmhGgyTLwG1ILybGtCkmNmzcpCeUEmK90xSVNntWyIM9BuaiCm2EU7H6bTtCmrRXNrkFiiJPuOwbUARyYZeDDJm2Wne1Co2v4j2SzfiH8ztyM7mTx/FzJvlgBJ8jr8NuMNZRsiersmU8KTjoKHOynvxJo4FlzdG9vhAsQlWyv/S0cCQI5pNj++BBhMkcuwarsxv9n1XCpmd2MIrjDRZIZVO1w0ouCGjneGSwIwtadzYu0cfPaTjwvTKP5Zwu8JtI+U2kENdIzfgmRDIk9wvbqo95sW45EqvfeJHTy2WeHGvbqu1ej0myNvH24yFwyUQASFAbtL0ptUJbiA=
@@ -22,7 +26,6 @@ jobs:
         - eval "$(ssh-agent -s)"
         - ssh-add login_mar5_1.pem
 
-    - stage: deploying
       addons:
         ssh_known_hosts: $MACHINE_IP
 
