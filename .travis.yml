@@ -26,11 +26,11 @@ jobs:
         - eval "$(ssh-agent -s)"
         - ssh-add login_mar5_1.pem
 
-      addons:
-        ssh_known_hosts: $MACHINE_IP
+#      addons:
+#        ssh_known_hosts: $MACHINE_IP
 
       deploy: 
         provider: script
         script: bash .travis/deploy.sh
         on:
-          all_branches: true
+          branch: master
