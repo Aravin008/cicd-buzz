@@ -7,14 +7,25 @@ python:
 
 stages:
 - name: test
-- name: staging
+- name: build and push docker image
+- name: deploy2
 
 jobs:
   include:
     - stage: test
       script:
         - python -m pytest -v
-    - stage: staging
+    - stage: build and push docker image
+      script:
+      - echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+      - export REPO="aravin008/cicd-buzz"
+      - export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TRAVIS_BRANCH
+        ; fi`
+      - docker build -f Dockerfile -t $REPO:$TAG .
+      - docker image ls
+      - echo "REPO:$REPO"
+      - docker push $REPO
+    - stage: deploy2
       env:
         - secure: mOzhoP5LBmz1TOfdVdodpmVyG1cHzz5+UqbCVhoSRuuaQZVG7L2Y7EzqtDY/N0ursbEOMuG0qJP2azPhTife/ME1Ktix5TXAyfrqz5AxDtHS4CX3q5V17ktFz3IMmcnWQYGLbc+4x+k+2ZrVx8qJ+MFZSqrZHhy+bE19e5o8JR1542fgsPXkby8vsMUQUakKUPWQNsYh9vNTqInMkscneiqYoW4TPDM+Vt8yEOSlFLms9A8vB7sYlJhDJn/JrJo2P6tJW0gvytXSFrAuNui8Ju2Aizi6e3gN7mjnAZaJ07D4rJ/nIrUQ6d3kX0t9WW9AF7wstS78chI/bUB3xf1H/wmKL+cWLlmhGgyTLwG1ILybGtCkmNmzcpCeUEmK90xSVNntWyIM9BuaiCm2EU7H6bTtCmrRXNrkFiiJPuOwbUARyYZeDDJm2Wne1Co2v4j2SzfiH8ztyM7mTx/FzJvlgBJ8jr8NuMNZRsiersmU8KTjoKHOynvxJo4FlzdG9vhAsQlWyv/S0cCQI5pNj++BBhMkcuwarsxv9n1XCpmd2MIrjDRZIZVO1w0ouCGjneGSwIwtadzYu0cfPaTjwvTKP5Zwu8JtI+U2kENdIzfgmRDIk9wvbqo95sW45EqvfeJHTy2WeHGvbqu1ej0myNvH24yFwyUQASFAbtL0ptUJbiA=
         - secure: Q4lRraxuklPsXIiax7mActW7FEiD+Jg1ZSbvUfeoABcfj7Oj58Q5TSvwndC8uLwqzYuEtfq+WLGMn9A9OyUjtQBhdco52ufqCGI2r5jU35pXKbtH6V0bKR8tNDc0W4HfaT9FgMYDtRYkiMNB1phU++BHBIaz7Qm4xnUPCXpb7IW/JvXThxjBamu3bZ/K641y/rLAZtBW9AYoDftAFk8N+ylWfKMKnctrr5ZAg46rcq9Yv/sdZ/hDXQ0DsS/ldBNQgnltG2IKSVCmnrB9xDWrmzXRz8+iFiAKQChgc5Hby+oP2c1dSS9B1QxVWxYFJ4ZR9fpwVsprSsoIexIGGGgq1wVLpiuBOQTGoAFv1oPcZYwdwofOc6OEhpcbEXkTVp1KWItf1GzWDiiVUT/Q4fTiO9XAcOEBaxGh+uMkf1tnECERiPNSfhIzmwFFr4/l4VL9J6T4wteM9qwYt82SdD3XwQQ8U7Y43z6e+Laffc6f+zLGl3hLZs3VUCBg6t+/vLvHM5++6HctXA34fADtUHLjDmPYcwFS4/AhYnsKhqeoSb0ybs0DEkXC0M/8iNc+IsHKZbIOeutC3zIgFBmRy52zwrOv0Y63T6m9xXDfeSzzdy7s+psCk0Vw6OtpVllu4k6+k84wUdI//Q1hpiQs1fZUXjnVnDKbM+LdHwS+jp3yaPs=
@@ -22,15 +33,19 @@ jobs:
       before_install:
         - openssl aes-256-cbc -K $encrypted_73f399b0be97_key -iv $encrypted_73f399b0be97_iv
           -in login_mar5_1.pem.enc -out login_mar5_1.pem -d
-        - chmod 600 login_mar5_1.pem
-        - eval "$(ssh-agent -s)"
-        - ssh-add login_mar5_1.pem
+#        - chmod 600 login_mar5_1.pem
+#        - eval "$(ssh-agent -s)"
+#        - ssh-add login_mar5_1.pem
 
 #      addons:
 #        ssh_known_hosts: $MACHINE_IP
 
       deploy: 
         provider: script
-        script: bash .travis/deploy.sh
-        on:
-          branch: master
+        script:
+          - chmod 400 "login_mar5_1.pem"
+          - ls -al login_mar5_1.pem
+          - scp -o "StrictHostKeyChecking no" -r -i "login_mar5_1.pem" .travis/test.sh $MACHINE:/home/ubuntu/
+          - ssh  -o "StrictHostKeyChecking no" -i "login_mar5_1.pem" $MACHINE 'bash -s'
+            < .travis/test.sh
+        
