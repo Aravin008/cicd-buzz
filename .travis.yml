@@ -4,28 +4,24 @@ services:
 language: python
 python:
 - '3.5'
-script:
-- python -m pytest -v
-addons:
-  ssh_known_hosts: "$MACHINE_IP"
-after_success:
-- echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
-- export REPO="aravin008/cicd-buzz"
-- export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TRAVIS_BRANCH
-  ; fi`
-- docker build -f Dockerfile -t $REPO:$TAG .
-- docker image ls
-- echo "REPO:$REPO"
-- docker push $REPO
-- chmod 400 "login_mar5_1.pem"
-- ls -al login_mar5_1.pem
-- scp -o "StrictHostKeyChecking no" -r -i "login_mar5_1.pem" .travis/test.sh $MACHINE:/home/ubuntu/
-- ssh  -o "StrictHostKeyChecking no" -i "login_mar5_1.pem" $MACHINE 'bash -s'
-  < .travis/test.sh
-before_install:
-- openssl aes-256-cbc -K $encrypted_73f399b0be97_key -iv $encrypted_73f399b0be97_iv
-  -in login_mar5_1.pem.enc -out login_mar5_1.pem -d
-env:
-  matrix:
-  - secure: idwi0d96DM6eDNQZ8VgFQtPpvN7pqB7YSeDiswdJIHPcz89NKFwmbxEssnzJhLcirT5YEaWlW6wYIMwndVe7a3P0xMTh1kL8SJHt3Ey4jRqQ3724UNfQ/aWTgU52811FHPmdZj9A20tmVR/RpNNgWx/KYti+K4u+JOLH9vXcGTMUJLtB8iRF/c+nwvyuexJYTbPIaFi1kLJpa9tt0CLbks6UpfkVytt+Rd95bai9in3jZ54ocrzz3Qiv2N/6wS+Kid5WQ8JbV4c3HL/w3VIuDxajkFlljc3M/0AgrD7SGKvTI/8JpQlFayaIYg/CODdGOmbGmluvgwaC2+9ClVBRZRoxy5LWuDfKB06M0vfUHO4aXf2W10tiAr0M5mZzMkB+Hy+Tw4OzCFWITMCPf+9HWbozePqNFqF694O7c7V9IKo6LF84MgYoosDCYxoSLWzpWCt3+AKixzoJyGH+XOrSgmw2jukLMnAtsoTdFs+N/F1PBkDRc1jj+iOXimd1xRTdPfpTk6VwHxtoI5ZBIcpj7mE1oBPompqKbfTgf3ZZ/ePvEKZ4Wd5lOXJZ9mP/bohRYChyXQGClVNnudRu2gQF5N/IJ4tVHJLlDjm1FN2nat8nMAqOlxy3m7pM8hYgXiWbn/tzqV5mdEIpab3o5mE1ZhGbEKNTqsWOWKd4znn+zwk=
-  - secure: D6B2Htgf6KPwVzDk+N6j0IWQVNq8pCjNR2uhSIFWshFBJ4ZmYn5FEUgZ2ioK2sq3GcXHgdxbWJlvPRsLRp7zQ2rewNRgRl4cUguLE4vEaQrJypuA8ULEGFJEuC63R1m8D3lpXgzbCOiCYufQ8eoT86eqafvUhxfnz1efbLeXaCgIh8RMGAN7TaZQTa5CDZzp2Bzjwe5b2ecirr+VVrn02hDufopdbHAW5dUhR3OUo1EW+Cs7BgE5shPjas9aSwftV0wK+3e0frH4vfY/f10gkGprDjLAssSqltZ+/cHijiBvclPZAGJzvfgjczM0zDmUNtNBOnr8o7l6CTihMe2FJdXPTnBAgiWq0c5gjjc2jZYW2D4t9ok0R9/pxUu2B1GSWj4Xhd7SI3tdfghWXy2Y2mWlYtKfWYsqtuPXS1v5Ulk9RPoS06zb97a6oJx3WUNlObjFh4JrB7z+ZBM4V1/i8n14INkytUgwrQIHuY3Qwmrli6V3kpw12N5bKghoek0/AUYGfJ4j5gjUlIZzEg3zsVikuHR6Vb9RpixdpyGnjlFqhuvQMgqQAfeIL/91r3IvqxhmyfgVE6KnfEBNAH7EPy8y0dBFOZEeGYGMqHAbNlTEb2m0cH21kfNDdrtqRbAD4vS+8IelTHf8BgDmObqSjwoFofOvyvBYTCrT4J8eztg=
+jobs:
+	env:
+	- secure: idwi0d96DM6eDNQZ8VgFQtPpvN7pqB7YSeDiswdJIHPcz89NKFwmbxEssnzJhLcirT5YEaWlW6wYIMwndVe7a3P0xMTh1kL8SJHt3Ey4jRqQ3724UNfQ/aWTgU52811FHPmdZj9A20tmVR/RpNNgWx/KYti+K4u+JOLH9vXcGTMUJLtB8iRF/c+nwvyuexJYTbPIaFi1kLJpa9tt0CLbks6UpfkVytt+Rd95bai9in3jZ54ocrzz3Qiv2N/6wS+Kid5WQ8JbV4c3HL/w3VIuDxajkFlljc3M/0AgrD7SGKvTI/8JpQlFayaIYg/CODdGOmbGmluvgwaC2+9ClVBRZRoxy5LWuDfKB06M0vfUHO4aXf2W10tiAr0M5mZzMkB+Hy+Tw4OzCFWITMCPf+9HWbozePqNFqF694O7c7V9IKo6LF84MgYoosDCYxoSLWzpWCt3+AKixzoJyGH+XOrSgmw2jukLMnAtsoTdFs+N/F1PBkDRc1jj+iOXimd1xRTdPfpTk6VwHxtoI5ZBIcpj7mE1oBPompqKbfTgf3ZZ/ePvEKZ4Wd5lOXJZ9mP/bohRYChyXQGClVNnudRu2gQF5N/IJ4tVHJLlDjm1FN2nat8nMAqOlxy3m7pM8hYgXiWbn/tzqV5mdEIpab3o5mE1ZhGbEKNTqsWOWKd4znn+zwk=
+	- secure: D6B2Htgf6KPwVzDk+N6j0IWQVNq8pCjNR2uhSIFWshFBJ4ZmYn5FEUgZ2ioK2sq3GcXHgdxbWJlvPRsLRp7zQ2rewNRgRl4cUguLE4vEaQrJypuA8ULEGFJEuC63R1m8D3lpXgzbCOiCYufQ8eoT86eqafvUhxfnz1efbLeXaCgIh8RMGAN7TaZQTa5CDZzp2Bzjwe5b2ecirr+VVrn02hDufopdbHAW5dUhR3OUo1EW+Cs7BgE5shPjas9aSwftV0wK+3e0frH4vfY/f10gkGprDjLAssSqltZ+/cHijiBvclPZAGJzvfgjczM0zDmUNtNBOnr8o7l6CTihMe2FJdXPTnBAgiWq0c5gjjc2jZYW2D4t9ok0R9/pxUu2B1GSWj4Xhd7SI3tdfghWXy2Y2mWlYtKfWYsqtuPXS1v5Ulk9RPoS06zb97a6oJx3WUNlObjFh4JrB7z+ZBM4V1/i8n14INkytUgwrQIHuY3Qwmrli6V3kpw12N5bKghoek0/AUYGfJ4j5gjUlIZzEg3zsVikuHR6Vb9RpixdpyGnjlFqhuvQMgqQAfeIL/91r3IvqxhmyfgVE6KnfEBNAH7EPy8y0dBFOZEeGYGMqHAbNlTEb2m0cH21kfNDdrtqRbAD4vS+8IelTHf8BgDmObqSjwoFofOvyvBYTCrT4J8eztg=
+	before_install:
+	- chmod 600 blog/login_mar5_1.pem
+	- eval "$(ssh-agent -s)"
+	- ssh-add login_mar5_1.pem
+	script:
+	# Unittest for python script
+	- python -m pytest -v
+	# Security flaw check using bandit
+	- bandit -r tests/
+	- bandit -r buzz/
+	addons:
+	  ssh_known_hosts: $MACHINE_IP
+	deploy:
+	- provider: script
+	  script: bash .travis/deploy.sh
+	  on:
+	    all_branches: true
